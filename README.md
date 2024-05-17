@@ -1,1 +1,1 @@
-# Epitech-JAM-3
+# Epitech JAM n°3
