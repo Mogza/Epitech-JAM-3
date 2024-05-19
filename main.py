@@ -23,26 +23,28 @@ police = pygame.font.Font("assets/ARCADE_R.TTF", 35)
 score = 0
 streak = 0
 mstreak = 0
+status = ""
 
-def afficher_texte_centre(texte, x, y):
-    texte_surface = police.render(texte, True, (0, 0, 0))
+def afficher_texte_centre(texte, color, x, y):
+    texte_surface = police.render(texte, True, color)
     texte_rect = texte_surface.get_rect()
     texte_rect.centerx = largeur * (x / 100)
     texte_rect.centery = hauteur * (y / 100)
     fenetre.blit(texte_surface, texte_rect)
 
 def demarrer_jeu():
-    global score, streak, mstreak
+    global score, streak, mstreak, status
     mot_actuel = random.choice(mots)
     saisie_utilisateur = ""
     temps_debut = time.time()
 
     while True:
-        fenetre.fill((255, 255, 255))
-        afficher_texte_centre(mot_actuel, 50, 45)
-        afficher_texte_centre(saisie_utilisateur, 50, 55)
-        afficher_texte_centre(str(score), 6, 5)
-        afficher_texte_centre(str(streak), 6, 10)
+        fenetre.fill((25, 25, 25))
+        afficher_texte_centre(mot_actuel, (255, 255, 255), 50, 40)
+        afficher_texte_centre(saisie_utilisateur, (0, 225, 0), 50, 50)
+        afficher_texte_centre(status, (0, 0, 255), 50, 60)
+        afficher_texte_centre(str(score), (0, 225, 0), 6, 5)
+        afficher_texte_centre(str(streak), (255, 0, 0), 6, 10)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -60,12 +62,16 @@ def demarrer_jeu():
                     pygame.display.update()
                     streak += 1
                     score += streak * len(mot_actuel)
+                    status = "+" + str(streak * len(mot_actuel))
+                    print(time.time() - temps_debut)
                     return demarrer_jeu()
                 elif event.key == pygame.K_RETURN and saisie_utilisateur != mot_actuel:
                     pygame.display.update()
                     if streak > mstreak:
                         mstreak = streak
                     streak = 0
+                    status = "-"
+                    print(time.time() - temps_debut)
                     return demarrer_jeu()
 
         pygame.display.update()
