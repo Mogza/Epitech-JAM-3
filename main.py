@@ -1,3 +1,5 @@
+from time import time
+
 import pygame
 import random
 import time
@@ -24,6 +26,7 @@ score = 0
 streak = 0
 mstreak = 0
 status = ""
+hp = 3
 
 def afficher_texte_centre(texte, color, x, y):
     texte_surface = police.render(texte, True, color)
@@ -33,7 +36,7 @@ def afficher_texte_centre(texte, color, x, y):
     fenetre.blit(texte_surface, texte_rect)
 
 def demarrer_jeu():
-    global score, streak, mstreak, status
+    global score, streak, mstreak, status, hp
     mot_actuel = random.choice(mots)
     saisie_utilisateur = ""
     temps_debut = time.time()
@@ -42,10 +45,15 @@ def demarrer_jeu():
         fenetre.fill((25, 25, 25))
         afficher_texte_centre(mot_actuel, (255, 255, 255), 50, 40)
         afficher_texte_centre(saisie_utilisateur, (0, 225, 0), 50, 50)
-        afficher_texte_centre(status, (0, 0, 255), 50, 60)
-        afficher_texte_centre(str(score), (0, 225, 0), 6, 5)
-        afficher_texte_centre(str(streak), (255, 0, 0), 6, 10)
-
+        afficher_texte_centre(status, (255, 0, 0), 50, 60)
+        afficher_texte_centre("Score : " + str(score), (0, 225, 0), 10, 5)
+        afficher_texte_centre("Vies : " + str(hp), (0, 0, 255), 10, 10)
+        if hp == 0:
+            score = 0
+            streak = 0
+            status = ""
+            hp = 3
+            menu_principal()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -62,33 +70,34 @@ def demarrer_jeu():
                     pygame.display.update()
                     streak += 1
                     score += streak * len(mot_actuel)
-                    status = "+" + str(streak * len(mot_actuel))
-                    print(time.time() - temps_debut)
+                    status = str(streak) + " Streak"
                     return demarrer_jeu()
                 elif event.key == pygame.K_RETURN and saisie_utilisateur != mot_actuel:
                     pygame.display.update()
                     if streak > mstreak:
                         mstreak = streak
                     streak = 0
-                    status = "-"
-                    print(time.time() - temps_debut)
+                    status = ""
+                    hp -= 1
                     return demarrer_jeu()
 
         pygame.display.update()
 
 def menu_principal():
     while True:
-        fenetre.fill((255, 255, 255))
-        afficher_texte_centre("MENU", (0, 0, 0), 50, 30)
-        
+        fenetre.fill((25, 25, 25))
+        afficher_texte_centre("Menu", (255, 255, 255), 50, 30)
+        if (mstreak > 0):
+            afficher_texte_centre("Meilleur streak : " + str(mstreak), (255, 255, 255), 50, 35)
+
         bouton_demarrer = pygame.Rect(largeur / 2 - 100, hauteur / 2 - 50, 200, 50)
         bouton_quitter = pygame.Rect(largeur / 2 - 100, hauteur / 2 + 20, 200, 50)
 
         pygame.draw.rect(fenetre, (0, 255, 0), bouton_demarrer)
         pygame.draw.rect(fenetre, (255, 0, 0), bouton_quitter)
 
-        afficher_texte_centre("START", (255, 255, 255), 50, 48)
-        afficher_texte_centre("EXIT", (255, 255, 255), 50, 54)
+        afficher_texte_centre("Start", (255, 255, 255), 50, 48)
+        afficher_texte_centre("Exit", (255, 255, 255), 50, 54)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
