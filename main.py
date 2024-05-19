@@ -76,4 +76,31 @@ def demarrer_jeu():
 
         pygame.display.update()
 
-demarrer_jeu()
+def menu_principal():
+    while True:
+        fenetre.fill((255, 255, 255))
+        afficher_texte_centre("MENU", (0, 0, 0), 50, 30)
+        
+        bouton_demarrer = pygame.Rect(largeur / 2 - 100, hauteur / 2 - 50, 200, 50)
+        bouton_quitter = pygame.Rect(largeur / 2 - 100, hauteur / 2 + 20, 200, 50)
+
+        pygame.draw.rect(fenetre, (0, 255, 0), bouton_demarrer)
+        pygame.draw.rect(fenetre, (255, 0, 0), bouton_quitter)
+
+        afficher_texte_centre("START", (255, 255, 255), 50, 48)
+        afficher_texte_centre("EXIT", (255, 255, 255), 50, 54)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_demarrer.collidepoint(event.pos):
+                    demarrer_jeu()
+                if bouton_quitter.collidepoint(event.pos):
+                    pygame.quit()
+                    return
+
+        pygame.display.update()
+
+menu_principal()
