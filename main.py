@@ -106,6 +106,7 @@ def demarrer_jeu():
             streak = 0
             status = ""
             hp = 3
+            streak_detector = 0
             afficher_page_defaite()
         if seconds > 5:
             pygame.display.update()
