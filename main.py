@@ -135,6 +135,7 @@ def demarrer_jeu():
                         status = str(streak)
                     else:
                         streak_detector += 1
+                        score += len(mot_actuel)
                     return demarrer_jeu()
                 elif event.key == pygame.K_RETURN and saisie_utilisateur != mot_actuel:
                     pygame.display.update()
