@@ -54,6 +54,8 @@ def afficher_page_defaite():
             pygame.draw.line(fenetre, couleur, (0, y), (largeur, y))
 
         afficher_texte_centre_menu("Défaite!", (255, 0, 0), largeur // 2, hauteur // 4, TAILLE_POLICE_MENU)
+        afficher_texte_centre_menu("Best Score : " + str(get_best_score()), (0, 225, 0), 1650, 50, TAILLE_POLICE_MENU)
+        afficher_texte_centre_menu("Your Score : " + str(get_last_score()), (0, 225, 0), largeur // 2, (hauteur // 4) + 50, TAILLE_POLICE_MENU)
 
         if bouton_menu.collidepoint(pygame.mouse.get_pos()):
             afficher_bouton("Retour au menu", (0, 105, 105), bouton_menu, 10)
@@ -92,16 +94,19 @@ def demarrer_jeu():
         seconds = (pygame.time.get_ticks()-start_ticks)/1000
         afficher_texte_centre(mot_actuel, (255, 255, 255), 50, 40)
         afficher_texte_centre(saisie_utilisateur, (0, 225, 0), 50, 50)
-        afficher_texte_centre(status, (133, 6, 6), 50, 60)
+        afficher_texte_centre(status, (180, 6, 6), 50, 60)
         afficher_texte_centre("Score : " + str(score), (0, 225, 0), 12, 5)
         afficher_texte_centre("Vies : ", (255, 127, 0), 10, 15)
-        afficher_texte_centre(str(int((5 - seconds) + 1)) + " secondes", (133, 6, 6), 50, 30)
+        afficher_texte_centre(str(int((5 - seconds) + 1)) + " secondes", (180, 6, 6), 50, 30)
+        afficher_texte_centre("Best Score : " + str(get_best_score()), (0, 225, 0), 80, 5)
         draw_life_points(hp)
 
         if status != "":
             draw_streak_screen()
             draw_streak_flamme()
         if hp == 0:
+            write_last_score(score)
+            write_best_score(score)
             score = 0
             streak = 0
             status = ""
@@ -191,6 +196,44 @@ def afficher_texte_centre_menu(texte, color, x, y, taille_police):
     text = font.render(texte, True, color)
     text_rect = text.get_rect(center=(x, y))
     fenetre.blit(text, text_rect)
+
+
+def get_best_score():
+    f = open("scores/bestScore.sc", "r+")
+    not_cleaned_old = f.read()
+    old = not_cleaned_old.strip('\x00')
+    if old:
+        return int(old)
+    return 0
+
+
+def get_last_score():
+    f = open("scores/lastScore.sc", "r+")
+    not_cleaned_old = f.read()
+    old = not_cleaned_old.strip('\x00')
+    if old:
+        return int(old)
+    return 0
+
+
+def write_best_score(points):
+    f = open("scores/bestScore.sc", "r+")
+    not_cleaned_old = f.read()
+    old = not_cleaned_old.strip('\x00')
+    if old and points > int(old):
+        f.truncate(0)
+        f.write(str(points))
+    elif not old:
+        f.truncate(0)
+        f.write(str(points))
+    f.close()
+
+
+def write_last_score(points):
+    f = open("scores/lastScore.sc", "w")
+    f.truncate(0)
+    f.write(str(points))
+    f.close()
 
 
 TAILLE_POLICE_MENU = 60
