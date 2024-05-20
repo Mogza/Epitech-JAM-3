@@ -34,6 +34,46 @@ def afficher_texte_centre(texte, color, x, y):
     texte_rect.centerx = largeur * (x / 100)
     texte_rect.centery = hauteur * (y / 100)
     fenetre.blit(texte_surface, texte_rect)
+    
+def afficher_page_defaite():
+    bouton_menu = pygame.Rect(largeur // 2 - LARGEUR_BOUTON // 2, hauteur // 2 - HAUTEUR_BOUTON // 2, LARGEUR_BOUTON, HAUTEUR_BOUTON)
+    bouton_rejouer = pygame.Rect(largeur // 2 - LARGEUR_BOUTON // 2, hauteur // 2 + 80, LARGEUR_BOUTON, HAUTEUR_BOUTON)
+
+    while True:
+        for y in range(hauteur):
+            couleur = (
+                0 + (105 - 0) * y / hauteur,
+                105 + (105 - 105) * y / hauteur,
+                105 + (105 - 105) * y / hauteur
+            )
+            pygame.draw.line(fenetre, couleur, (0, y), (largeur, y))
+
+        afficher_texte_centre_menu("Défaite!", (255, 0, 0), largeur // 2, hauteur // 4, TAILLE_POLICE_MENU)
+
+        if bouton_menu.collidepoint(pygame.mouse.get_pos()):
+            afficher_bouton("Retour au menu", (0, 105, 105), bouton_menu, 10)
+        else:
+            afficher_bouton("Retour au menu", (0, 225, 225), bouton_menu, 10)
+
+        if bouton_rejouer.collidepoint(pygame.mouse.get_pos()):
+            afficher_bouton("Rejouer", (0, 105, 105), bouton_rejouer, 10)
+        else:
+            afficher_bouton("Rejouer", (0, 225, 225), bouton_rejouer, 10)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_menu.collidepoint(event.pos):
+                    return menu_principal()
+                elif bouton_rejouer.collidepoint(event.pos):
+                    return demarrer_jeu()
+
+        pygame.display.flip()
+
+
+
 
 def demarrer_jeu():
     global score, streak, mstreak, status, hp
@@ -42,7 +82,7 @@ def demarrer_jeu():
     temps_debut = time.time()
 
     while True:
-        fenetre.fill((25, 25, 25))
+        fenetre.fill((0, 105, 105))
         afficher_texte_centre(mot_actuel, (255, 255, 255), 50, 40)
         afficher_texte_centre(saisie_utilisateur, (0, 225, 0), 50, 50)
         afficher_texte_centre(status, (255, 0, 0), 50, 60)
@@ -53,7 +93,7 @@ def demarrer_jeu():
             streak = 0
             status = ""
             hp = 3
-            menu_principal()
+            afficher_page_defaite()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -83,33 +123,63 @@ def demarrer_jeu():
 
         pygame.display.update()
 
+
+COULEUR_BLEU = (51, 51, 255)
+COULEUR_VIOLET = (153, 51, 255) 
+
+def afficher_bouton(texte, couleur, rect, radius):
+    pygame.draw.rect(fenetre, couleur, rect, border_radius=radius)
+    afficher_texte_centre_menu(texte, (255, 255, 255), rect.centerx, rect.centery, 30)
+
+LARGEUR_BOUTON = 250
+HAUTEUR_BOUTON = 80
+
+def afficher_texte_centre_menu(texte, color, x, y, taille_police):
+    font = pygame.font.Font(None, taille_police)
+    text = font.render(texte, True, color)
+    text_rect = text.get_rect(center=(x, y))
+    fenetre.blit(text, text_rect)
+
+TAILLE_POLICE_MENU = 60
+
 def menu_principal():
     while True:
-        fenetre.fill((25, 25, 25))
-        afficher_texte_centre("Menu", (255, 255, 255), 50, 30)
-        if (mstreak > 0):
-            afficher_texte_centre("Meilleur streak : " + str(mstreak), (255, 255, 255), 50, 35)
+        for y in range(hauteur):
+            couleur = (
+                0 + (105 - 0) * y / hauteur,
+                105 + (105 - 105) * y / hauteur,
+                105 + (105 - 105) * y / hauteur
+            )
+            pygame.draw.line(fenetre, couleur, (0, y), (largeur, y))
 
-        bouton_demarrer = pygame.Rect(largeur / 2 - 100, hauteur / 2 - 50, 200, 50)
-        bouton_quitter = pygame.Rect(largeur / 2 - 100, hauteur / 2 + 20, 200, 50)
+        afficher_texte_centre_menu("MENU", (255, 255, 255), largeur // 2, hauteur // 4, TAILLE_POLICE_MENU)
+        
+        bouton_demarrer = pygame.Rect(largeur // 2 - LARGEUR_BOUTON // 2, hauteur // 2 - HAUTEUR_BOUTON // 2, LARGEUR_BOUTON, HAUTEUR_BOUTON)
+        bouton_quitter = pygame.Rect(largeur // 2 - LARGEUR_BOUTON // 2, hauteur // 2 + 80, LARGEUR_BOUTON, HAUTEUR_BOUTON)
 
-        pygame.draw.rect(fenetre, (0, 255, 0), bouton_demarrer)
-        pygame.draw.rect(fenetre, (255, 0, 0), bouton_quitter)
-
-        afficher_texte_centre("Start", (255, 255, 255), 50, 48)
-        afficher_texte_centre("Exit", (255, 255, 255), 50, 54)
+        if bouton_demarrer.collidepoint(pygame.mouse.get_pos()):
+            afficher_bouton("START", (0, 105, 105), bouton_demarrer, 10)
+        else:
+            afficher_bouton("START", (0, 225, 225), bouton_demarrer, 10)
+        
+        if bouton_quitter.collidepoint(pygame.mouse.get_pos()):
+            afficher_bouton("EXIT", (0, 105, 105), bouton_quitter, 10)
+        else:
+            afficher_bouton("EXIT", (0, 225, 225), bouton_quitter, 10)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if bouton_demarrer.collidepoint(event.pos):
                     demarrer_jeu()
                 if bouton_quitter.collidepoint(event.pos):
                     pygame.quit()
-                    return
+                    sys.exit()
 
-        pygame.display.update()
+        pygame.display.flip()
 
 menu_principal()
+
+pygame.quit()
