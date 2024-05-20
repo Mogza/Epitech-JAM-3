@@ -19,7 +19,7 @@ def extraire_noms_filtres(fichier_json):
 
 
 info_objet = pygame.display.Info()
-largeur, hauteur = info_objet.current_w, info_objet.current_h
+largeur, hauteur = 1920, 1080
 fenetre = pygame.display.set_mode((largeur, hauteur), pygame.FULLSCREEN)
 mots = extraire_noms_filtres("assets/words.json")
 pygame.display.set_caption("JAM 3")
@@ -27,6 +27,7 @@ police = pygame.font.Font("assets/ARCADE_R.TTF", 35)
 score = 0
 streak = 0
 mstreak = 0
+streak_detector = 0
 status = ""
 hp = 3
 
@@ -78,18 +79,21 @@ def afficher_page_defaite():
 
 
 def demarrer_jeu():
-    global score, streak, mstreak, status, hp
+    global score, streak, mstreak, streak_detector, status, hp
     mot_actuel = random.choice(mots)
     saisie_utilisateur = ""
     start_ticks = pygame.time.get_ticks()
+    background = pygame.image.load("assets/Background.jpg").convert_alpha()
+    background = pygame.transform.scale(background, (1920, 1080))
 
     while True:
-        fenetre.fill((0, 105, 105))
+        fenetre.fill((0, 0, 0))
+        fenetre.blit(background, (0, 0))
         seconds = (pygame.time.get_ticks()-start_ticks)/1000
         afficher_texte_centre(mot_actuel, (255, 255, 255), 50, 40)
         afficher_texte_centre(saisie_utilisateur, (0, 225, 0), 50, 50)
         afficher_texte_centre(status, (133, 6, 6), 50, 60)
-        afficher_texte_centre("Score : " + str(score), (0, 225, 0), 10, 5)
+        afficher_texte_centre("Score : " + str(score), (0, 225, 0), 12, 5)
         afficher_texte_centre("Vies : ", (255, 127, 0), 10, 15)
         afficher_texte_centre(str(int((5 - seconds) + 1)) + " secondes", (133, 6, 6), 50, 30)
         draw_life_points(hp)
@@ -125,15 +129,19 @@ def demarrer_jeu():
                     return
                 elif event.key == pygame.K_RETURN and saisie_utilisateur == mot_actuel:
                     pygame.display.update()
-                    streak += 1
-                    score += streak * len(mot_actuel)
-                    status = str(streak)
+                    if streak_detector >= 3:
+                        streak += 1
+                        score += streak * len(mot_actuel)
+                        status = str(streak)
+                    else:
+                        streak_detector += 1
                     return demarrer_jeu()
                 elif event.key == pygame.K_RETURN and saisie_utilisateur != mot_actuel:
                     pygame.display.update()
                     if streak > mstreak:
                         mstreak = streak
                     streak = 0
+                    streak_detector = 0
                     status = ""
                     hp -= 1
                     return demarrer_jeu()
@@ -158,8 +166,7 @@ def draw_life_points(life_points):
 
 def draw_streak_screen():
     image = pygame.image.load("assets/Fire.png").convert_alpha()
-    image = pygame.transform.scale(image, (1000, 438))
-    fenetre.blit(image, (405, 642))
+    fenetre.blit(image, (0, 700))
 
 
 def draw_streak_flamme():
