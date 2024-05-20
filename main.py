@@ -1,12 +1,14 @@
 from time import time
 
 import pygame
+import sys
 import random
 import time
 import json
 import re
 
 pygame.init()
+
 
 def extraire_noms_filtres(fichier_json):
     with open(fichier_json, "r") as f:
@@ -28,13 +30,15 @@ mstreak = 0
 status = ""
 hp = 3
 
+
 def afficher_texte_centre(texte, color, x, y):
     texte_surface = police.render(texte, True, color)
     texte_rect = texte_surface.get_rect()
     texte_rect.centerx = largeur * (x / 100)
     texte_rect.centery = hauteur * (y / 100)
     fenetre.blit(texte_surface, texte_rect)
-    
+
+
 def afficher_page_defaite():
     bouton_menu = pygame.Rect(largeur // 2 - LARGEUR_BOUTON // 2, hauteur // 2 - HAUTEUR_BOUTON // 2, LARGEUR_BOUTON, HAUTEUR_BOUTON)
     bouton_rejouer = pygame.Rect(largeur // 2 - LARGEUR_BOUTON // 2, hauteur // 2 + 80, LARGEUR_BOUTON, HAUTEUR_BOUTON)
@@ -73,8 +77,6 @@ def afficher_page_defaite():
         pygame.display.flip()
 
 
-
-
 def demarrer_jeu():
     global score, streak, mstreak, status, hp
     mot_actuel = random.choice(mots)
@@ -87,7 +89,11 @@ def demarrer_jeu():
         afficher_texte_centre(saisie_utilisateur, (0, 225, 0), 50, 50)
         afficher_texte_centre(status, (255, 0, 0), 50, 60)
         afficher_texte_centre("Score : " + str(score), (0, 225, 0), 10, 5)
-        afficher_texte_centre("Vies : " + str(hp), (0, 0, 255), 10, 10)
+        afficher_texte_centre("Vies : ", (0, 0, 255), 10, 15)
+        draw_life_points(hp)
+        if status != "":
+            draw_streak_screen()
+            draw_streak_flamme()
         if hp == 0:
             score = 0
             streak = 0
@@ -110,7 +116,7 @@ def demarrer_jeu():
                     pygame.display.update()
                     streak += 1
                     score += streak * len(mot_actuel)
-                    status = str(streak) + " Streak"
+                    status = str(streak)
                     return demarrer_jeu()
                 elif event.key == pygame.K_RETURN and saisie_utilisateur != mot_actuel:
                     pygame.display.update()
@@ -127,12 +133,38 @@ def demarrer_jeu():
 COULEUR_BLEU = (51, 51, 255)
 COULEUR_VIOLET = (153, 51, 255) 
 
+
+def draw_life_points(life_points):
+    image = pygame.image.load("assets/Flamme.png").convert_alpha()
+    image = pygame.transform.scale(image, (62, 144))
+    y = 275
+    i = 0
+    while i < life_points :
+        fenetre.blit(image, (y, 75))
+        i = i + 1
+        y = y + 72
+
+
+def draw_streak_screen():
+    image = pygame.image.load("assets/Fire.png").convert_alpha()
+    image = pygame.transform.scale(image, (1000, 438))
+    fenetre.blit(image, (405, 642))
+
+
+def draw_streak_flamme():
+    image = pygame.image.load("assets/Streak_flamme.png").convert_alpha()
+    image = pygame.transform.scale(image, (75, 75))
+    fenetre.blit(image, (990, 605))
+
+
 def afficher_bouton(texte, couleur, rect, radius):
     pygame.draw.rect(fenetre, couleur, rect, border_radius=radius)
     afficher_texte_centre_menu(texte, (255, 255, 255), rect.centerx, rect.centery, 30)
 
+
 LARGEUR_BOUTON = 250
 HAUTEUR_BOUTON = 80
+
 
 def afficher_texte_centre_menu(texte, color, x, y, taille_police):
     font = pygame.font.Font(None, taille_police)
@@ -140,7 +172,9 @@ def afficher_texte_centre_menu(texte, color, x, y, taille_police):
     text_rect = text.get_rect(center=(x, y))
     fenetre.blit(text, text_rect)
 
+
 TAILLE_POLICE_MENU = 60
+
 
 def menu_principal():
     while True:
@@ -180,6 +214,8 @@ def menu_principal():
 
         pygame.display.flip()
 
+
 menu_principal()
+
 
 pygame.quit()
